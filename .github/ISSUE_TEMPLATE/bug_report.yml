@@ -1,0 +1,29 @@
+name: Bug report
+description: Something skipped wrong, didn't skip, or broke on Crunchyroll
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: episode
+    attributes:
+      label: Episode link
+      description: The crunchyroll.com/watch/... URL, if it's about a specific episode.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and extension version
+      placeholder: Chrome 131, Autoskip 1.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console log
+      description: DevTools → Console, Verbose level on, filter for "CR Autoskip". Paste what it shows.
+      render: text
