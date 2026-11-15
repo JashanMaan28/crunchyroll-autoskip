@@ -238,9 +238,89 @@
     return text && text.length <= 120 ? text : "";
   }
 
+  // "E1 - Cruelty" -> 1. Falls back to "Episode 1" in the tab title.
+  function getEpisodeNumber() {
+    const m =
+      getEpisodeTitle().match(/^(?:S\d+\s*)?E(\d+)\b/i) || String(document.title || "").match(/\bEpisode\s+(\d+)\b/i);
+    return m ? Number(m[1]) : null;
+  }
+
+  // Best effort: "Season 2" / "S2 E3" near the title or in the tab title.
+  // null when the page doesn't say, which is fine (episode 1 still counts).
+  function getSeason() {
+    const texts = [getEpisodeTitle(), document.title];
+    for (const el of [...document.querySelectorAll('[data-t*="season" i], [class*="season-title" i]')].slice(0, 10)) {
+      texts.push(el.textContent);
+    }
+    for (const text of texts) {
+      const m = String(text || "").match(/\bseason\s*(\d+)\b|\bS(\d+)\s*E\d+/i);
+      if (m) return `S${m[1] || m[2]}`;
+    }
+    return null;
+  }
+
+  // ---- Seek bar ---------------------------------------------------------------
+
+  const SEEK_SELECTORS = [
+    '[data-testid*="scrub" i]',
+    '[data-testid*="seek" i]',
+    '[data-testid*="progress" i]',
+    '[role="slider"]',
+    'input[type="range"]',
+    '[class*="scrub" i]',
+    '[class*="seek" i]',
+    '[class*="progress" i]'
+  ].join(",");
+
+  // The player's progress bar: a wide, short slider along the bottom of the
+  // video. Returns the element or null.
+  function findSeekBar(video) {
+    if (!video) return null;
+    const vr = video.getBoundingClientRect();
+    if (vr.width < 200) return null;
+    let best = null;
+    let bestScore = -Infinity;
+    for (const el of queryAll(SEEK_SELECTORS)) {
+      const r = el.getBoundingClientRect();
+      if (r.width < vr.width * 0.4 || r.height < 2 || r.height > 48) continue;
+      if (r.left < vr.left - 4 || r.right > vr.right + 4) continue;
+      if (r.top < vr.top + vr.height * 0.55 || r.bottom > vr.bottom + 80) continue;
+      const label = ["aria-label", "data-testid", "class"].map((a) => el.getAttribute(a) || "").join(" ");
+      if (/volume|buffer/i.test(label)) continue;
+      let score = (r.width / vr.width) * 10;
+      if (el.getAttribute("role") === "slider" || el.matches('input[type="range"]')) score += 3;
+      const max = Number(el.getAttribute("aria-valuemax") || el.getAttribute("max"));
+      if (video.duration > 0 && Math.abs(max - video.duration) < 3) score += 6;
+      if (/scrub|seek/i.test(label)) score += 2;
+      if (score > bestScore) {
+        best = el;
+        bestScore = score;
+      }
+    }
+    return best;
+  }
+
+  // How visible an element really is, counting faded-out ancestors (the
+  // player hides its controls by fading them).
+  function effectiveOpacity(el) {
+    let o = 1;
+    for (let e = el, depth = 0; e && e.nodeType === 1 && depth < 25; depth++) {
+      const cs = getComputedStyle(e);
+      if (cs.display === "none" || cs.visibility === "hidden") return 0;
+      o *= Number(cs.opacity) || 0;
+      if (o < 0.05) return 0;
+      e = e.parentElement || (e.getRootNode && e.getRootNode().host) || null;
+    }
+    return o;
+  }
+
   root.CRAS_page = {
     episodeIdFromUrl,
     getEpisodeTitle,
+    getEpisodeNumber,
+    getSeason,
+    findSeekBar,
+    effectiveOpacity,
     isVisible,
     getMainVideo,
     findNativeSkipButtons,

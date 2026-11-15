@@ -130,6 +130,16 @@
     .toast::before { content: ""; width: 0.5em; height: 0.5em; border-radius: 50%; background: var(--text-2); }
     .toast.on::before { background: var(--accent); }
 
+    /* ---- seek bar markers ---------------------------------------------------
+       Drawn over the player's own progress bar; never takes clicks. */
+    .marks { position: fixed; pointer-events: none; transition: opacity 200ms var(--ease); }
+    .marks i {
+      position: absolute; top: 0; bottom: 0; min-width: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+    }
+
     .enter { animation: enter 240ms var(--ease) both; }
     @keyframes enter { from { opacity: 0; transform: translateY(8px); } }
     .leave { animation: leave 160ms var(--ease) both; }
@@ -185,7 +195,9 @@
     toast.setAttribute("role", "status");
     toast.hidden = true;
     tr.append(toast);
-    layer.append(br, tr);
+    const marks = el("div", "marks");
+    marks.hidden = true;
+    layer.append(marks, br, tr);
 
     // Keep clicks on the overlay from reaching the player (which would pause).
     for (const evt of ["click", "mousedown", "mouseup", "pointerdown", "pointerup", "dblclick"]) {
@@ -198,6 +210,43 @@
     let raf = 0;
     let toastTimer = 0;
     let face = { text: "", kind: "skip", paused: false };
+    // Seek bar markers: [{ start, end }] in seconds, drawn over `seekEl`.
+    let markList = [];
+    let markSig = "";
+    let markDur = 0;
+    let seekEl = null;
+    let seekOpacity = 0;
+
+    function markersActive() {
+      return !!(seekEl && seekEl.isConnected && markList.length && markDur > 0 && seekOpacity > 0);
+    }
+
+    function drawMarks() {
+      marks.replaceChildren();
+      for (const m of markList) {
+        const i = document.createElement("i");
+        const a = Math.max(0, Math.min(1, m.start / markDur));
+        const b = Math.max(0, Math.min(1, m.end / markDur));
+        i.style.left = `${a * 100}%`;
+        i.style.width = `${Math.max(0, b - a) * 100}%`;
+        marks.append(i);
+      }
+    }
+
+    function placeMarks() {
+      if (!markersActive()) {
+        marks.hidden = true;
+        return;
+      }
+      const r = seekEl.getBoundingClientRect();
+      const h = Math.max(3, Math.min(5, Math.round(r.height)));
+      marks.hidden = false;
+      marks.style.left = `${r.left}px`;
+      marks.style.width = `${r.width}px`;
+      marks.style.top = `${r.top + r.height / 2 - h / 2}px`;
+      marks.style.height = `${h}px`;
+      marks.style.opacity = String(seekOpacity);
+    }
 
     function drawFace() {
       const icon = face.paused ? ICONS.pause : face.kind === "next" ? ICONS.next : ICONS.skip;
@@ -217,11 +266,12 @@
     }
 
     function anyVisible() {
-      return !countdown.hidden || !notice.hidden || !toast.hidden;
+      return !countdown.hidden || !notice.hidden || !toast.hidden || markersActive();
     }
 
     function place() {
       raf = 0;
+      placeMarks();
       if (!anyVisible()) return;
       mount();
       let rect;
@@ -237,6 +287,13 @@
       tr.style.right = `${Math.max(8, innerWidth - rect.right + rect.width * 0.03)}px`;
       tr.style.top = `${Math.max(8, rect.top + rect.height * 0.05)}px`;
       raf = requestAnimationFrame(place);
+    }
+
+    function hideToast() {
+      clearTimeout(toastTimer);
+      if (toast.hidden) return;
+      toast.classList.add("leave");
+      toastTimer = setTimeout(() => (toast.hidden = true), 160);
     }
 
     function schedule() {
@@ -321,6 +378,24 @@
       isNoticeVisible() {
         return !notice.hidden;
       },
+      // [{ start, end }] in seconds; `duration` of the episode.
+      setMarkers(list, duration) {
+        const sig = `${duration}|${list.map((m) => `${m.start.toFixed(1)}-${m.end.toFixed(1)}`).join(",")}`;
+        markList = list;
+        markDur = duration;
+        if (sig !== markSig) {
+          markSig = sig;
+          drawMarks();
+        }
+        schedule();
+      },
+      // The player's seek bar and how visible its controls are (0..1).
+      setSeekBar(elem, opacity) {
+        seekEl = elem;
+        seekOpacity = elem ? opacity : 0;
+        schedule();
+      },
+      // ms <= 0 keeps the toast up until hideToast().
       toast(text, ms = 1800, on = null) {
         toast.textContent = text;
         toast.classList.toggle("on", on === true);
@@ -329,11 +404,9 @@
         mount();
         schedule();
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => {
-          toast.classList.add("leave");
-          setTimeout(() => (toast.hidden = true), 160);
-        }, ms);
+        if (ms > 0) toastTimer = setTimeout(hideToast, ms);
       },
+      hideToast,
       host
     };
   }

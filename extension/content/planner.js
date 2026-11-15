@@ -7,6 +7,9 @@
   const MIN_REMAINING = 1;
   // Tolerance for "the preview starts right after the credits".
   const ADJACENT_SLOP = 2;
+  // A custom mark this close to a known edge (credits end, episode end...)
+  // snaps onto it, so it lands in the same place on every episode.
+  const SNAP = 1.5;
 
   // Turn Crunchyroll's skip-events JSON into a sorted list of segments.
   // Shape: { intro: { start, end, type, ... }, credits: {...}, recap: {}, preview: {} }
@@ -31,6 +34,8 @@
   // global toggles and the per-show "watch the OP/ED" exceptions?
   function isEligible(type, settings, seriesId) {
     if (!settings.enabled) return false;
+    // Custom marks are opt-in one by one, so they're always on.
+    if (type === "custom") return true;
     if (!settings.segments[type]) return false;
     const ex = seriesId && settings.showExceptions && settings.showExceptions[seriesId];
     if (ex && ex.keep && ex.keep[type]) return false;
@@ -53,25 +58,139 @@
     return null;
   }
 
+  // Where a skip that ends at `from` should really land: straight through any
+  // custom marks that start right there (e.g. a post-credits scene the
+  // viewer marked), so it's one countdown instead of two.
+  function chainEnd(from, segments, eligible) {
+    let cur = from;
+    for (let moved = true; moved; ) {
+      moved = false;
+      for (const s of segments) {
+        if (s.type !== "custom" || !eligible("custom")) continue;
+        if (s.start <= cur + ADJACENT_SLOP && s.end > cur + 0.01) {
+          cur = s.end;
+          moved = true;
+        }
+      }
+    }
+    return cur;
+  }
+
+  // Seconds of footage after `from` that will actually be watched: up to a
+  // skipped preview (or the end), minus custom marks in between.
+  function watchableAfter(from, segments, duration, eligible) {
+    const hasDuration = Number.isFinite(duration) && duration > 0;
+    const preview = segments.find((s) => s.type === "preview" && s.start >= from - ADJACENT_SLOP);
+    const end = preview && eligible("preview") ? Math.max(from, preview.start) : hasDuration ? duration : from;
+    if (end <= from) return 0;
+    const spans = segments
+      .filter((s) => s.type === "custom" && eligible("custom") && s.end > from && s.start < end)
+      .map((s) => [Math.max(from, s.start), Math.min(end, s.end)])
+      .sort((a, b) => a[0] - b[0]);
+    let covered = 0;
+    let cur = null;
+    for (const [a, b] of spans) {
+      if (!cur || a > cur[1]) {
+        if (cur) covered += cur[1] - cur[0];
+        cur = [a, b];
+      } else cur[1] = Math.max(cur[1], b);
+    }
+    if (cur) covered += cur[1] - cur[0];
+    return Math.max(0, end - from - covered);
+  }
+
   // The "smart" credits decision.
   //  - autoNext off            -> just seek past the credits
   //  - real footage after them -> seek past the credits so the post-credits
   //                               scene plays (next episode is handled later)
   //  - nothing worth watching  -> go straight to the next episode
   // A preview right after the credits doesn't count as a scene when previews
-  // are being skipped.
+  // are being skipped, and neither does anything the viewer marked to skip.
   function planCredits({ credits, segments, duration, settings, eligible }) {
-    if (!settings.autoNext) return { kind: "seek", target: credits.end };
-    const preview = segments.find(
-      (s) => s.type === "preview" && s.start >= credits.end - ADJACENT_SLOP
-    );
-    const hasDuration = Number.isFinite(duration) && duration > 0;
-    const contentEnd = preview && eligible("preview") ? preview.start : hasDuration ? duration : credits.end;
-    const tail = contentEnd - credits.end;
-    if (tail >= settings.postCreditsMin) {
-      return { kind: "seek", target: credits.end, postScene: true };
+    const target = chainEnd(credits.end, segments, eligible);
+    if (!settings.autoNext) return { kind: "seek", target };
+    if (watchableAfter(target, segments, duration, eligible) >= settings.postCreditsMin) {
+      return { kind: "seek", target, postScene: true };
     }
-    return { kind: "next" };
+    return { kind: "next", target };
+  }
+
+  // A custom mark: seek past it, or go to the next episode when nothing
+  // worth watching is left after it.
+  function planCustom({ seg, segments, duration, settings, eligible }) {
+    const target = chainEnd(seg.end, segments, eligible);
+    if (!settings.autoNext || !(Number.isFinite(duration) && duration > 0)) return { kind: "seek", target };
+    const credits = segments.find((s) => s.type === "credits");
+    const pastCredits = !credits || seg.start >= credits.start - ADJACENT_SLOP;
+    if (pastCredits && watchableAfter(target, segments, duration, eligible) < settings.postCreditsMin) {
+      return { kind: "next", target };
+    }
+    return { kind: "seek", target, postScene: !!credits && pastCredits };
+  }
+
+  // ---- custom marks ---------------------------------------------------------
+
+  // Describe time `t` relative to the nearest known edge, so a mark made on
+  // one episode lands on the same moment in the others.
+  function anchorPoint(t, segments, duration) {
+    const cands = [{ a: "start", at: 0 }];
+    if (Number.isFinite(duration) && duration > 0) cands.push({ a: "end", at: duration });
+    for (const s of segments) {
+      if (!TYPES.includes(s.type)) continue;
+      cands.push({ a: `${s.type}.start`, at: s.start }, { a: `${s.type}.end`, at: effectiveEnd(s, duration) });
+    }
+    let best = cands[0];
+    for (const c of cands) if (Math.abs(t - c.at) < Math.abs(t - best.at)) best = c;
+    let o = t - best.at;
+    if (Math.abs(o) <= SNAP) o = 0;
+    return { a: best.a, o: Math.round(o * 10) / 10 };
+  }
+
+  function resolvePoint(p, segments, duration) {
+    const hasDuration = Number.isFinite(duration) && duration > 0;
+    let at;
+    if (p.a === "start") at = 0;
+    else if (p.a === "end") {
+      if (!hasDuration) return null;
+      at = duration;
+    } else {
+      const [type, edge] = String(p.a).split(".");
+      const seg = segments.find((s) => s.type === type);
+      if (seg) at = edge === "start" ? seg.start : effectiveEnd(seg, duration);
+      // No preview this time: "until the preview" means until the end.
+      else if (type === "preview" && edge === "start" && hasDuration) at = duration;
+      else return null;
+    }
+    let v = at + (Number(p.o) || 0);
+    if (hasDuration) v = Math.min(v, duration);
+    return Math.max(0, v);
+  }
+
+  // Turn stored marks into segments for this episode. Marks whose anchors
+  // don't exist here (no credits data, say) are left out.
+  function resolveMarks(list, { episodeId, segments, duration }) {
+    const out = [];
+    for (const m of list || []) {
+      if (m.ep && m.ep !== episodeId) continue;
+      const start = resolvePoint(m.s, segments, duration);
+      const end = resolvePoint(m.e, segments, duration);
+      if (start === null || end === null || end - start < 1) continue;
+      out.push({ type: "custom", start, end, source: "data", label: m.label || "", markId: m.id });
+    }
+    return out.sort((a, b) => a.start - b.start);
+  }
+
+  // ---- openings -------------------------------------------------------------
+
+  // Play the opening instead of skipping it? Yes for a show you've never
+  // heard it on, on every episode 1, and on a season you haven't seen yet.
+  // `record` = { seasons: [...] } saved the last time an opening played.
+  function shouldWatchOpening({ enabled, record, season, episodeNumber }) {
+    if (!enabled) return false;
+    if (!record) return true;
+    if (episodeNumber === 1) return true;
+    const seasons = Array.isArray(record.seasons) ? record.seasons : [];
+    return !!season && !seasons.includes(season);
   }
 
   function planPreview({ preview, settings }) {
@@ -100,7 +219,14 @@
     isEligible,
     effectiveEnd,
     findTrigger,
+    chainEnd,
+    watchableAfter,
     planCredits,
+    planCustom,
+    anchorPoint,
+    resolvePoint,
+    resolveMarks,
+    shouldWatchOpening,
     planPreview,
     nextEpisodeGate,
     secondsSaved

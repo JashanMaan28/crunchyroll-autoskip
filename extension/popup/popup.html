@@ -19,6 +19,9 @@
         <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></symbol>
         <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7" /></symbol>
         <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></symbol>
+        <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></symbol>
+        <symbol id="i-markers" viewBox="0 0 24 24"><path d="M3 15h18" /><path d="M7 11v8M13 11v8" /><path d="M7 7l3-3 3 3" /></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" /></symbol>
       </defs>
     </svg>
 
@@ -42,12 +45,45 @@
         </div>
         <div class="timeline" id="timeline" aria-hidden="true"></div>
         <ul class="legend" id="legend"></ul>
+
+        <button type="button" class="add-mark" id="addMark" hidden>
+          <svg><use href="#i-plus" /></svg>
+          <span>Mark a part to skip</span>
+        </button>
+        <form class="mark-form" id="markForm" hidden novalidate>
+          <div class="mf-grid">
+            <label for="mStart">Start</label>
+            <input id="mStart" type="text" inputmode="numeric" placeholder="0:00" autocomplete="off" spellcheck="false" />
+            <button type="button" class="chip" data-now="mStart">Now</button>
+            <span></span>
+            <label for="mEnd">End</label>
+            <input id="mEnd" type="text" inputmode="numeric" placeholder="0:00" autocomplete="off" spellcheck="false" />
+            <button type="button" class="chip" data-now="mEnd">Now</button>
+            <button type="button" class="chip" id="mToEnd" title="Until the episode ends">End</button>
+          </div>
+          <div class="segmented two" role="radiogroup" aria-label="Apply to">
+            <button type="button" role="radio" data-scope="show" id="scopeShow" aria-checked="true">Every episode</button>
+            <button type="button" role="radio" data-scope="episode" aria-checked="false">This episode</button>
+          </div>
+          <p class="mf-note" id="mNote">Tip: in the player, press <kbd>Alt</kbd><kbd>Shift</kbd><kbd>M</kbd> at the start and again at the end.</p>
+          <div class="mf-actions">
+            <button type="button" class="btn" id="mCancel">Cancel</button>
+            <button type="submit" class="btn primary">Save</button>
+          </div>
+        </form>
       </section>
 
-      <section class="saved" aria-label="Time saved">
-        <p class="figure" id="savedTotal">0s</p>
+      <section class="saved" aria-labelledby="weekLabel">
+        <div class="week-head">
+          <div>
+            <p class="figure" id="weekTotal">0s</p>
+            <p class="caption"><span id="weekLabel">saved this week</span> · <b id="weekEps">0 episodes</b></p>
+          </div>
+          <div class="spark" id="spark" role="img"></div>
+        </div>
+        <ul class="top-shows" id="topShows" aria-label="Top shows this week" hidden></ul>
         <div class="caption-row">
-          <p class="caption">saved · <span id="savedToday">0s</span> today · <span id="skipCount">0</span> skips</p>
+          <p class="caption"><b id="savedTotal">0s</b> all time · <b id="skipCount">0</b> skips</p>
           <button type="button" class="link" id="resetStats">Reset</button>
         </div>
       </section>
@@ -84,6 +120,23 @@
               <small>Watches post-credits scenes first</small>
             </span>
             <span class="switch small"><input type="checkbox" id="autoNext" /></span>
+          </label>
+
+          <label class="row">
+            <svg class="icon"><use href="#i-music" /></svg>
+            <span class="row-text">
+              <span>Play new openings once</span>
+              <small>First time per show, and every episode 1</small>
+            </span>
+            <span class="switch small"><input type="checkbox" id="firstOpening" /></span>
+          </label>
+
+          <label class="row">
+            <svg class="icon"><use href="#i-markers" /></svg>
+            <span class="row-text">
+              <span>Show skips on the seek bar</span>
+            </span>
+            <span class="switch small"><input type="checkbox" id="seekMarkers" /></span>
           </label>
 
           <div class="row">
@@ -133,11 +186,11 @@
       <details class="group exceptions">
         <summary>
           <svg class="chev"><use href="#i-chevron" /></svg>
-          <span>Per-show exceptions</span>
+          <span>Per-show rules</span>
           <span class="count" id="exceptionCount">0</span>
         </summary>
         <ul id="exceptions"></ul>
-        <p class="empty" id="noExceptions">None yet. Open an episode and set a part to “Watch”.</p>
+        <p class="empty" id="noExceptions">None yet. Open an episode to set a part to “Watch” or mark your own skips.</p>
       </details>
     </main>
 
@@ -146,10 +199,12 @@
         <span class="keys"><kbd>Esc</kbd> cancel</span>
         <span class="keys"><kbd>Enter</kbd> skip</span>
         <span class="keys"><kbd>Alt</kbd><kbd>Shift</kbd><kbd>S</kbd> on/off</span>
+        <span class="keys"><kbd>Alt</kbd><kbd>Shift</kbd><kbd>M</kbd> mark</span>
       </p>
     </footer>
 
     <script src="../shared/defaults.js"></script>
+    <script src="../content/planner.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

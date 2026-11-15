@@ -2,17 +2,23 @@
   "manifest_version": 3,
   "name": "Crunchyroll Autoskip",
   "short_name": "CR Autoskip",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Netflix-style auto-skip for Crunchyroll: intros, recaps, credits and previews, with a countdown and smart next episode.",
   "minimum_chrome_version": "116",
-  "permissions": ["storage"],
-  "host_permissions": ["https://static.crunchyroll.com/skip-events/*"],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://static.crunchyroll.com/skip-events/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://www.crunchyroll.com/*"],
+      "matches": [
+        "https://www.crunchyroll.com/*"
+      ],
       "js": [
         "shared/defaults.js",
         "content/planner.js",
@@ -25,8 +31,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/figtree-latin.woff2"],
-      "matches": ["https://www.crunchyroll.com/*"]
+      "resources": [
+        "fonts/figtree-latin.woff2"
+      ],
+      "matches": [
+        "https://www.crunchyroll.com/*"
+      ]
     }
   ],
   "action": {
@@ -47,8 +57,16 @@
   },
   "commands": {
     "toggle-autoskip": {
-      "suggested_key": { "default": "Alt+Shift+S" },
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
       "description": "Turn auto-skip on or off"
+    },
+    "mark-segment": {
+      "suggested_key": {
+        "default": "Alt+Shift+M"
+      },
+      "description": "Mark the start, then the end, of a part to skip"
     }
   }
 }
