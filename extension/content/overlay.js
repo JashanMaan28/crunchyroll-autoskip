@@ -53,7 +53,7 @@
        both sides of the moving edge. */
     .skip {
       position: relative; display: inline-grid;
-      padding: 0; border: 0; border-radius: 0.5em;
+      padding: 0; border: 0; border-radius: 0.375em;
       background: var(--surface);
       box-shadow: inset 0 0 0 1px var(--hair), 0 0.5em 1.5em rgba(0, 0, 0, 0.35);
       cursor: pointer; pointer-events: auto;
@@ -65,8 +65,8 @@
     .skip:active { transform: scale(0.97); }
     .face {
       grid-area: 1 / 1;
-      display: inline-flex; align-items: center; gap: 0.6em;
-      padding: 0.75em 1.25em 0.75em 1em;
+      display: inline-flex; align-items: center; gap: 0.4em;
+      padding: 0.55em 0.9em 0.55em 0.75em;
       font-weight: 600; line-height: 1; white-space: nowrap;
       color: var(--text);
     }
@@ -75,11 +75,11 @@
       clip-path: inset(0 calc((1 - var(--p)) * 100%) 0 0);
     }
     .paused .face.fill { background: #b9662f; }
-    .face svg { width: 1.1em; height: 1.1em; flex: none; }
+    .face svg { width: 0.95em; height: 0.95em; flex: none; }
 
     .cancel {
       display: inline-grid; place-items: center;
-      width: 2.5em; height: 2.5em; padding: 0;
+      width: 2.1em; height: 2.1em; padding: 0;
       border: 0; border-radius: 50%;
       color: var(--text-2); background: var(--surface);
       box-shadow: inset 0 0 0 1px var(--hair), 0 0.5em 1.5em rgba(0, 0, 0, 0.35);
@@ -88,7 +88,7 @@
     }
     .cancel:hover { color: var(--text); box-shadow: inset 0 0 0 1px rgba(238, 239, 243, 0.5), 0 0.5em 1.5em rgba(0, 0, 0, 0.35); }
     .cancel:active { transform: scale(0.94); }
-    .cancel svg { width: 0.9em; height: 0.9em; }
+    .cancel svg { width: 0.8em; height: 0.8em; }
     .skip:focus-visible, .cancel:focus-visible, .action:focus-visible {
       outline: 2px solid var(--accent); outline-offset: 3px;
     }
@@ -171,7 +171,7 @@
     cancel.setAttribute("aria-label", "Cancel auto-skip");
     cancel.title = "Cancel (Esc)";
     const countdown = el("div", "dock-row");
-    countdown.style.cssText = "display:flex;align-items:center;gap:0.5em";
+    countdown.style.cssText = "display:flex;align-items:center;gap:0.4em";
     countdown.append(skip, cancel);
     countdown.hidden = true;
     const notice = el("div", "notice");
@@ -230,7 +230,7 @@
         rect = { left: 0, top: 0, right: innerWidth, bottom: innerHeight, width: innerWidth, height: innerHeight };
       }
       // Scale with the player like Netflix does: bigger in fullscreen.
-      const size = Math.round(Math.min(22, Math.max(13, rect.width / 64)));
+      const size = Math.round(Math.min(20, Math.max(14, rect.width / 68)));
       layer.style.setProperty("--size", `${size}px`);
       br.style.right = `${Math.max(8, innerWidth - rect.right + rect.width * 0.035)}px`;
       br.style.bottom = `${Math.max(8, innerHeight - rect.bottom + rect.height * 0.14)}px`;
