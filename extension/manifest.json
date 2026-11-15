@@ -2,14 +2,16 @@
   "manifest_version": 3,
   "name": "Crunchyroll Autoskip",
   "short_name": "CR Autoskip",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Netflix-style auto-skip for Crunchyroll: intros, recaps, credits and previews, with a countdown and smart next episode.",
   "minimum_chrome_version": "116",
   "permissions": [
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
-    "https://static.crunchyroll.com/skip-events/*"
+    "https://static.crunchyroll.com/skip-events/*",
+    "https://www.crunchyroll.com/*"
   ],
   "background": {
     "service_worker": "background.js"

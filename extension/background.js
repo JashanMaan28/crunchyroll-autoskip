@@ -98,6 +98,20 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   }
 });
 
+// After an install or update, the copies of the content script already running
+// in open Crunchyroll tabs are cut off from the extension. Put fresh ones in so
+// those tabs keep working without a refresh (the old copies retire themselves).
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if ((reason !== "install" && reason !== "update") || !chrome.scripting) return;
+  const [cs] = chrome.runtime.getManifest().content_scripts;
+  const tabs = await chrome.tabs.query({ url: cs.matches });
+  for (const tab of tabs) {
+    chrome.scripting.executeScript({ target: { tabId: tab.id }, files: cs.js }).catch(() => {
+      /* tab is loading or not scriptable */
+    });
+  }
+});
+
 chrome.commands.onCommand.addListener(async (command, tab) => {
   if (command === "toggle-autoskip") {
     const { enabled } = await chrome.storage.sync.get("enabled");

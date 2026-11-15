@@ -306,10 +306,11 @@
       node.classList.add("enter");
     }
 
-    document.addEventListener("fullscreenchange", () => {
+    function onFullscreen() {
       mount();
       schedule();
-    });
+    }
+    document.addEventListener("fullscreenchange", onFullscreen);
 
     return {
       setVideo(v) {
@@ -407,6 +408,14 @@
         if (ms > 0) toastTimer = setTimeout(hideToast, ms);
       },
       hideToast,
+      // Take everything off the page (used when this copy of the script retires).
+      destroy() {
+        cancelAnimationFrame(raf);
+        raf = 0;
+        clearTimeout(toastTimer);
+        document.removeEventListener("fullscreenchange", onFullscreen);
+        host.remove();
+      },
       host
     };
   }

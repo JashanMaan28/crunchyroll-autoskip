@@ -6,6 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-15
+
+### Fixed
+
+- "Uncaught TypeError: Cannot read properties of undefined (reading
+  'sendMessage')" after the extension was reloaded or updated while a
+  Crunchyroll tab was open. The old copy of the script now notices it has
+  been cut off and removes itself instead of throwing.
+
+### Changed
+
+- Open Crunchyroll tabs pick up the extension right after it's installed or
+  updated, without a page refresh. This needs the `scripting` permission and
+  access to `www.crunchyroll.com` (which the extension already had through its
+  content script).
+
 ## [1.1.0] - 2026-11-14
 
 ### Added
@@ -47,6 +63,7 @@ All notable changes to this project are documented here. The format follows
   shortcuts.
 - Settings popup with an episode timeline.
 
-[Unreleased]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JashanMaan28/crunchyroll-autoskip/releases/tag/v1.0.0

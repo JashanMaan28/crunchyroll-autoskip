@@ -1,8 +1,14 @@
 // Main controller: watches the current episode, decides when to show the
 // countdown, and carries out skips / next-episode jumps.
 (() => {
-  if (window.top !== window || window.__crasLoaded) return;
-  window.__crasLoaded = true;
+  if (window.top !== window) return;
+  // An older copy of this script can still be running in the tab (from before
+  // the extension was reloaded or updated). The newest copy takes over.
+  try {
+    if (typeof window.__crasStop === "function") window.__crasStop();
+  } catch {
+    /* the old copy is already gone */
+  }
 
   const C = globalThis.CRAS;
   const P = globalThis.CRAS_planner;
@@ -377,7 +383,35 @@
 
   // ---- main loop -----------------------------------------------------------
 
+  // False once the extension has been reloaded, updated or removed: this copy
+  // of the script is orphaned and every chrome.* call would throw.
+  function alive() {
+    try {
+      return !!(chrome.runtime && chrome.runtime.id);
+    } catch {
+      return false;
+    }
+  }
+
+  let tickTimer = 0;
+  let stopped = false;
+
+  function stop() {
+    if (stopped) return;
+    stopped = true;
+    clearInterval(tickTimer);
+    clearInterval(countdownTimer);
+    countdown = null;
+    restoreNativeButton();
+    overlay.destroy();
+    document.removeEventListener("keydown", onKeyDown, true);
+    if (window.__crasStop === stop) window.__crasStop = null;
+    log("stopped (extension reloaded or updated)");
+  }
+  window.__crasStop = stop;
+
   function tick() {
+    if (!alive()) return stop();
     checkEpisode();
     attachVideo(Page.getMainVideo());
     if (!ep.id || !video) return;
@@ -501,6 +535,7 @@
 
   function stepCountdown() {
     if (!countdown) return;
+    if (!alive()) return stop();
     const now = performance.now();
     // Clamp so a throttled background tab doesn't jump straight to the end.
     const dt = Math.min(now - countdown.last, 1100);
@@ -546,6 +581,7 @@
 
   function execute() {
     if (!countdown) return;
+    if (!alive()) return stop();
     clearInterval(countdownTimer);
     const { seg, plan } = countdown;
     countdown = null;
@@ -657,9 +693,9 @@
 
   // ---- keyboard --------------------------------------------------------------
 
-  document.addEventListener(
-    "keydown",
-    (e) => {
+  function onKeyDown(e) {
+    if (!alive()) return stop();
+    {
       const t = e.target;
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       if (marking && e.key === "Escape" && !countdown) {
@@ -676,9 +712,9 @@
       // Esc would also exit fullscreen in the player; we only meant the skip.
       e.preventDefault();
       e.stopImmediatePropagation();
-    },
-    true
-  );
+    }
+  }
+  document.addEventListener("keydown", onKeyDown, true);
 
   // ---- popup bridge ----------------------------------------------------------
 
@@ -711,6 +747,6 @@
   });
 
   loadAll();
-  setInterval(tick, 250);
+  tickTimer = setInterval(tick, 250);
   tick();
 })();
