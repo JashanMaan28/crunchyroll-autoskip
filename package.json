@@ -1,0 +1,10 @@
+{
+  "name": "crunchyroll-autoskip",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Netflix-style auto-skip for Crunchyroll (Chrome/Edge extension).",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

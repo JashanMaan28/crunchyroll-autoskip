@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Autoskip for Crunchyroll</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zM19 5v14" /></symbol>
+        <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4M12 14l3-3" /><circle cx="12" cy="14" r="8" /></symbol>
+        <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" /><path d="M17 2l-5 5-5-5" /></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" /></symbol>
+        <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" /></symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14" /></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" /></symbol>
+        <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7" /></symbol>
+        <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></symbol>
+      </defs>
+    </svg>
+
+    <header class="bar">
+      <img class="mark" src="../icons/icon.svg" alt="" width="28" height="28" />
+      <div class="brand">
+        <h1>Autoskip</h1>
+        <p id="status">for Crunchyroll</p>
+      </div>
+      <label class="switch" title="Turn auto-skip on or off (Alt+Shift+S)">
+        <input type="checkbox" id="enabled" />
+        <span class="sr">Auto-skip</span>
+      </label>
+    </header>
+
+    <main id="main">
+      <section class="episode" aria-labelledby="showTitle">
+        <div class="ep-head">
+          <h2 id="showTitle">No episode open</h2>
+          <p id="epMeta">Open an episode on Crunchyroll to see where it skips</p>
+        </div>
+        <div class="timeline" id="timeline" aria-hidden="true"></div>
+        <ul class="legend" id="legend"></ul>
+      </section>
+
+      <section class="saved" aria-label="Time saved">
+        <p class="figure" id="savedTotal">0s</p>
+        <div class="caption-row">
+          <p class="caption">saved · <span id="savedToday">0s</span> today · <span id="skipCount">0</span> skips</p>
+          <button type="button" class="link" id="resetStats">Reset</button>
+        </div>
+      </section>
+
+      <section class="group">
+        <h3>Skip</h3>
+        <div class="tiles">
+          <button type="button" class="tile" data-seg="intro" aria-pressed="true">
+            <span class="tile-name">Intro</span>
+            <span class="glyph" data-pos="intro"></span>
+          </button>
+          <button type="button" class="tile" data-seg="recap" aria-pressed="true">
+            <span class="tile-name">Recap</span>
+            <span class="glyph" data-pos="recap"></span>
+          </button>
+          <button type="button" class="tile" data-seg="credits" aria-pressed="true">
+            <span class="tile-name">Credits</span>
+            <span class="glyph" data-pos="credits"></span>
+          </button>
+          <button type="button" class="tile" data-seg="preview" aria-pressed="true">
+            <span class="tile-name">Preview</span>
+            <span class="glyph" data-pos="preview"></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="group">
+        <h3>Playback</h3>
+        <div class="rows">
+          <label class="row">
+            <svg class="icon"><use href="#i-next" /></svg>
+            <span class="row-text">
+              <span>Smart next episode</span>
+              <small>Watches post-credits scenes first</small>
+            </span>
+            <span class="switch small"><input type="checkbox" id="autoNext" /></span>
+          </label>
+
+          <div class="row">
+            <svg class="icon"><use href="#i-timer" /></svg>
+            <span class="row-text">
+              <span id="delayLabel">Countdown</span>
+            </span>
+            <div class="stepper" role="group" aria-labelledby="delayLabel">
+              <button type="button" data-step="delay" data-dir="-1" aria-label="Shorter"><svg><use href="#i-minus" /></svg></button>
+              <output id="delayOut">3s</output>
+              <button type="button" data-step="delay" data-dir="1" aria-label="Longer"><svg><use href="#i-plus" /></svg></button>
+            </div>
+          </div>
+
+          <div class="row">
+            <svg class="icon"><use href="#i-tv" /></svg>
+            <span class="row-text">
+              <span id="bingeLabel">Binge limit</span>
+              <small id="bingeInfo" hidden></small>
+            </span>
+            <div class="stepper" role="group" aria-labelledby="bingeLabel">
+              <button type="button" data-step="binge" data-dir="-1" aria-label="Fewer"><svg><use href="#i-minus" /></svg></button>
+              <output id="bingeOut">Off</output>
+              <button type="button" data-step="binge" data-dir="1" aria-label="More"><svg><use href="#i-plus" /></svg></button>
+            </div>
+          </div>
+
+          <div class="row stacked">
+            <div class="row-line">
+              <svg class="icon"><use href="#i-moon" /></svg>
+              <span class="row-text">
+                <span id="sleepLabel">Sleep timer</span>
+                <small id="sleepInfo" hidden></small>
+              </span>
+            </div>
+            <div class="segmented" role="radiogroup" aria-labelledby="sleepLabel">
+              <button type="button" role="radio" data-sleep="off">Off</button>
+              <button type="button" role="radio" data-sleep="15">15m</button>
+              <button type="button" role="radio" data-sleep="30">30m</button>
+              <button type="button" role="radio" data-sleep="60">1h</button>
+              <button type="button" role="radio" data-sleep="episode">End of ep</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <details class="group exceptions">
+        <summary>
+          <svg class="chev"><use href="#i-chevron" /></svg>
+          <span>Per-show exceptions</span>
+          <span class="count" id="exceptionCount">0</span>
+        </summary>
+        <ul id="exceptions"></ul>
+        <p class="empty" id="noExceptions">None yet. Open an episode and set a part to “Watch”.</p>
+      </details>
+    </main>
+
+    <footer>
+      <p>
+        <span class="keys"><kbd>Esc</kbd> cancel</span>
+        <span class="keys"><kbd>Enter</kbd> skip</span>
+        <span class="keys"><kbd>Alt</kbd><kbd>Shift</kbd><kbd>S</kbd> on/off</span>
+      </p>
+    </footer>
+
+    <script src="../shared/defaults.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
