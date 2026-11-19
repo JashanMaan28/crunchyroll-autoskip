@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Autoskip for Crunchyroll: skip intros, recaps and credits</title>
+  <meta name="description" content="A free browser extension that skips the recap, opening, credits and preview on Crunchyroll with a 3-second countdown you can cancel. For Chrome, Edge and Firefox.">
+  <meta name="theme-color" content="#0b0d14">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Autoskip for Crunchyroll">
+  <meta property="og:description" content="Skips the recap, opening, credits and preview with a 3-second countdown you can cancel.">
+  <meta property="og:image" content="https://jashanmaan28.github.io/crunchyroll-autoskip/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="/fonts/figtree.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body data-page="home">
+  <!-- partial:header -->
+  <main id="main">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero__scene" src="/src/assets/hero-night.webp" alt="" width="1672" height="941" fetchpriority="high">
+      <div class="wrap hero__copy">
+        <h1 id="hero-title">Skip the parts you’ve already seen</h1>
+        <p class="hero__sub">Autoskip skips the recap, the opening, the end credits and the next-episode preview on Crunchyroll. A button fills up for 3 seconds, then it jumps. Press Esc to watch instead.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#install">Install for Chrome</a>
+          <a class="btn btn--secondary" href="%BASE%demo/">Try it in your browser</a>
+        </div>
+        <p class="hero__meta">Also for Edge and Firefox. Free and open source.</p>
+      </div>
+      <div class="hero__stage">
+        <div id="hero-demo" class="hero__demo" role="img" aria-label="An episode playing in a browser. As the opening starts, a Skip Intro button fills up over 3 seconds and the video jumps past the opening. At the ending, a Next Episode button fills up and the next episode starts."></div>
+      </div>
+    </section>
+
+    <section class="section episode" aria-labelledby="ep-title">
+      <div class="wrap">
+        <h2 class="h2" id="ep-title">One episode, four skips</h2>
+        <p class="lede">The same 24-minute episode, laid out. The orange parts repeat every week, and Autoskip jumps over each one the moment it starts, using the episode’s own skip timestamps.</p>
+
+        <figure class="tl" data-reveal>
+          <div class="tl__bar">
+            <span class="tl__seg is-skip" style="--a:0;--b:62" data-label="Recap" data-time="0:00 to 1:02"></span>
+            <span class="tl__seg is-skip" style="--a:62;--b:152" data-label="Opening" data-time="1:02 to 2:32"></span>
+            <span class="tl__seg" style="--a:152;--b:1290" data-label="The episode" data-time="2:32 to 21:30"></span>
+            <span class="tl__seg is-skip" style="--a:1290;--b:1380" data-label="Ending" data-time="21:30 to 23:00"></span>
+            <span class="tl__seg is-skip" style="--a:1380;--b:1440" data-label="Preview" data-time="23:00 to 24:00"></span>
+          </div>
+          <ol class="tl__legend">
+            <li class="is-skip"><b>Recap</b><span>0:00 to 1:02</span></li>
+            <li class="is-skip"><b>Opening</b><span>1:02 to 2:32</span></li>
+            <li><b>The episode</b><span>2:32 to 21:30</span></li>
+            <li class="is-skip"><b>Ending</b><span>21:30 to 23:00</span></li>
+            <li class="is-skip"><b>Preview</b><span>23:00 to 24:00</span></li>
+          </ol>
+          <figcaption class="tl__sum">
+            <span class="tl__big">5m 2s</span>
+            <span>skipped in this episode. Over a 12-episode season like it, that’s an hour.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section credits" aria-labelledby="cr-title">
+      <div class="wrap split">
+        <div>
+          <h2 class="h2" id="cr-title">Stays for the scene after the credits</h2>
+          <p class="lede">Some episodes hide a scene after the ending. When there are at least 10 seconds of footage after the credits, Autoskip skips the credits and lets the scene play. When there’s nothing, it goes straight to the next episode.</p>
+        </div>
+        <div class="paths">
+          <div class="path">
+            <p class="path__title">A scene after the credits</p>
+            <div class="path__track">
+              <span class="pt pt--skip" style="flex:5">Ending</span>
+              <span class="pt pt--watch" style="flex:3">Scene</span>
+              <span class="pt pt--next">Next episode</span>
+            </div>
+          </div>
+          <div class="path">
+            <p class="path__title">Nothing after the credits</p>
+            <div class="path__track">
+              <span class="pt pt--skip" style="flex:5">Ending</span>
+              <span class="pt pt--next">Next episode</span>
+            </div>
+          </div>
+          <p class="paths__note">With <b>Smart next episode</b> off, it skips the credits and stops there.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section rules" aria-labelledby="rules-title">
+      <div class="wrap split split--wide">
+        <div class="rules__copy">
+          <h2 class="h2" id="rules-title">Your show, your rules</h2>
+          <dl class="rules__list">
+            <div>
+              <dt>Keep the openings you love</dt>
+              <dd>Open the popup on any episode and switch a part from Skip to Watch. It sticks for every episode of that show.</dd>
+            </div>
+            <div>
+              <dt>Hear each new opening once</dt>
+              <dd>The opening plays the first time you watch a show and on every episode 1. After that it’s skipped.</dd>
+            </div>
+            <div>
+              <dt>Mark your own skips</dt>
+              <dd>Press <span class="keys"><kbd class="kbd">Alt</kbd><kbd class="kbd">Shift</kbd><kbd class="kbd">M</kbd></span> where a part starts and again where it ends. An eyecatch, a recap in the middle, a post-credits scene you don’t want: it’s skipped on every episode of the show.</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="rules__shot">
+          <img src="/src/assets/popup.webp" width="360" height="388" alt="The Autoskip popup on an episode of Skyward Lantern. It lists the recap, intro, credits and preview with their times and a Skip button on each, plus a custom Eyecatch skip from 11:30 to 12:22 and a Mark a part to skip button." loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="section extras" aria-labelledby="extras-title">
+      <div class="wrap">
+        <h2 class="h2" id="extras-title">The small things</h2>
+        <dl class="extras__grid">
+          <div><dt>Pause freezes it</dt><dd>Pausing stops the countdown where it is. It picks up when you press play.</dd></div>
+          <div><dt>Rewind brings it back</dt><dd>Seek back into the opening and the button comes back, in case you want to hear it again.</dd></div>
+          <div><dt>Skips on the seek bar</dt><dd>The parts it will skip are shaded on the player’s progress bar.</dd></div>
+          <div><dt>Binge limit</dt><dd>After a number of episodes in a row, it pauses and asks if you’re still watching.</dd></div>
+          <div><dt>Sleep timer</dt><dd>Pause after 15 minutes, 30 minutes, an hour, or at the end of the episode.</dd></div>
+          <div><dt>Weekly recap</dt><dd>Time saved this week, a bar per day, and the shows you watched most.</dd></div>
+        </dl>
+        <p class="extras__keys"><span class="keys"><kbd class="kbd">Enter</kbd></span> skips now, <span class="keys"><kbd class="kbd">Esc</kbd></span> watches instead, <span class="keys"><kbd class="kbd">Alt</kbd><kbd class="kbd">Shift</kbd><kbd class="kbd">S</kbd></span> turns it on or off. <a href="%BASE%guide/">Read the guide</a></p>
+      </div>
+    </section>
+
+    <section class="section privacy" aria-labelledby="privacy-title">
+      <div class="wrap privacy__inner">
+        <h2 class="h2" id="privacy-title">Nothing leaves your browser</h2>
+        <p class="lede">No account, no analytics, no ads. Your settings and stats are kept in your browser. The only request Autoskip makes is for the episode’s skip timestamps, from Crunchyroll. <a href="%BASE%privacy/">Read the privacy policy</a></p>
+      </div>
+    </section>
+
+    <section class="section install" id="install" aria-labelledby="install-title">
+      <div class="wrap">
+        <h2 class="h2" id="install-title">Install</h2>
+        <p class="lede">The Chrome Web Store listing is in review. Until it’s approved, install it from the release on GitHub. It takes a minute.</p>
+        <div class="install__grid">
+          <div class="install__card">
+            <h3>Chrome and Edge</h3>
+            <ol>
+              <li>Download <code>crunchyroll-autoskip-chrome-%VERSION%.zip</code> and unzip it.</li>
+              <li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>) and turn on <b>Developer mode</b>.</li>
+              <li>Click <b>Load unpacked</b> and pick the unzipped folder.</li>
+              <li>Pin the orange icon so the settings are one click away.</li>
+            </ol>
+            <a class="btn btn--primary" href="%REPO%/releases/latest/download/crunchyroll-autoskip-chrome-%VERSION%.zip">Download for Chrome</a>
+          </div>
+          <div class="install__card">
+            <h3>Firefox <span class="muted">128 or newer</span></h3>
+            <ol>
+              <li>Download <code>crunchyroll-autoskip-firefox-%VERSION%.zip</code>.</li>
+              <li>Open <code>about:debugging#/runtime/this-firefox</code>.</li>
+              <li>Click <b>Load Temporary Add-on</b> and pick the zip.</li>
+              <li>Firefox removes temporary add-ons when it restarts. The <a href="%REPO%#install" rel="noopener">README</a> explains how to keep it.</li>
+            </ol>
+            <a class="btn btn--secondary" href="%REPO%/releases/latest/download/crunchyroll-autoskip-firefox-%VERSION%.zip">Download for Firefox</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <!-- partial:footer -->
+  <script type="module" src="/src/pages/home.tsx"></script>
+</body>
+</html>

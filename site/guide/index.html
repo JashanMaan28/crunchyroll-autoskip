@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guide · Autoskip for Crunchyroll</title>
+  <meta name="description" content="How Autoskip decides what to skip, how to keep the openings you like, mark your own skips, and use the binge limit, sleep timer and shortcuts.">
+  <meta name="theme-color" content="#0b0d14">
+  <meta property="og:image" content="https://jashanmaan28.github.io/crunchyroll-autoskip/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/figtree.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body data-page="guide">
+  <!-- partial:header -->
+  <main id="main" class="wrap guide">
+    <header class="page-head">
+      <h1>Guide</h1>
+      <p>Everything Autoskip does, and how to change it. Most of it works without touching a setting.</p>
+    </header>
+
+    <div class="guide__layout">
+      <nav class="guide__toc" aria-label="On this page">
+        <a href="#start">Getting started</a>
+        <a href="#countdown">The countdown</a>
+        <a href="#credits">Credits and the next episode</a>
+        <a href="#rules">Per-show rules</a>
+        <a href="#openings">New openings</a>
+        <a href="#custom">Your own skips</a>
+        <a href="#extras">Binge limit and sleep timer</a>
+        <a href="#keys">Keyboard shortcuts</a>
+        <a href="#faq">Questions</a>
+      </nav>
+
+      <article class="prose">
+        <h2 id="start">Getting started</h2>
+        <p>Install the extension (see <a href="%BASE%#install">Install</a>), open any episode on crunchyroll.com and press play. There’s nothing to set up. Click the orange icon in the toolbar to see what Autoskip found in the episode you’re watching and to change the settings. Pin it so it’s one click away.</p>
+        <p>Autoskip uses the skip timestamps Crunchyroll publishes for each episode, the same ones its own Skip Intro button uses. When an episode doesn’t have them yet, which happens with some brand-new simulcasts, Autoskip waits for the player’s own skip button and presses it for you.</p>
+
+        <h2 id="countdown">The countdown</h2>
+        <p>When a recap, opening, ending or preview starts, a button appears at the bottom right of the player and fills up over 3 seconds. When it’s full, Autoskip skips.</p>
+        <ul>
+          <li><strong>Skip right away:</strong> click the button or press <kbd class="kbd">Enter</kbd>.</li>
+          <li><strong>Watch it this time:</strong> click ✕ or press <kbd class="kbd">Esc</kbd>. That part plays, and it stays cancelled for this episode.</li>
+          <li><strong>Pausing</strong> freezes the countdown where it is. It picks up again when you press play.</li>
+          <li><strong>Seeking back</strong> before a part brings the button back, so you can rewatch the opening and still have it skipped.</li>
+        </ul>
+        <p>The parts that will be skipped are shaded on the player’s progress bar. You can turn that off under <strong>Show skips on the seek bar</strong>.</p>
+
+        <h2 id="credits">Credits and the next episode</h2>
+        <p>With <strong>Smart next episode</strong> on (the default), the ending works like this:</p>
+        <ul>
+          <li>If there are at least 10 seconds of footage after the credits, Autoskip skips the credits and lets that scene play. When it ends, it goes to the next episode.</li>
+          <li>If there’s nothing after the credits, it goes straight to the next episode.</li>
+          <li>The next-episode preview counts as nothing, unless you’ve told it to play previews.</li>
+        </ul>
+        <p>With Smart next episode off, Autoskip skips the credits and stops there, and Crunchyroll’s own autoplay takes over.</p>
+
+        <h2 id="rules">Per-show rules</h2>
+        <p>Open the popup on an episode. It lists the parts it found, with their times. Switch any of them from <strong>Skip</strong> to <strong>Watch</strong> and it sticks for every episode of that show. Use this for the openings you never want to miss. The rules are listed under <strong>Per-show rules</strong> in the popup, where you can remove them.</p>
+        <p>To stop skipping a kind of part everywhere, for example previews, turn it off under <strong>Skip</strong> in the popup’s settings.</p>
+
+        <h2 id="openings">New openings</h2>
+        <p>With <strong>Play new openings once</strong> on, the opening plays the first time you watch a show and on every episode 1, then it’s skipped. If the page shows the season number, a new season’s opening plays once too. The popup shows <strong>Once</strong> next to an opening that’s going to play. Click it to skip that one as well.</p>
+
+        <h2 id="custom">Your own skips</h2>
+        <p>For anything Crunchyroll doesn’t mark, like an eyecatch, a recap halfway through, or a post-credits scene you don’t care about:</p>
+        <ul>
+          <li><strong>While watching:</strong> press <span class="keys"><kbd class="kbd">Alt</kbd><kbd class="kbd">Shift</kbd><kbd class="kbd">M</kbd></span> where the part starts, then again where it ends. <kbd class="kbd">Esc</kbd> cancels.</li>
+          <li><strong>From the popup:</strong> click <strong>Mark a part to skip</strong> and type the start and end. <strong>Now</strong> fills in the current time, and <strong>End</strong> runs it to the end of the episode.</li>
+          <li><strong>Skip the scene after the credits:</strong> in the popup, switch <strong>After credits</strong> to <strong>Skip</strong>. From then on the credits go straight to the next episode for that show.</li>
+        </ul>
+        <p>A mark applies to every episode of the show. Autoskip saves it relative to the nearest point it knows (the end of the credits, the start of the preview, the end of the episode), so it lands in the same place even when episodes differ in length. Pick <strong>This episode</strong> in the popup for a one-off.</p>
+
+        <h2 id="extras">Binge limit and sleep timer</h2>
+        <p><strong>Binge limit:</strong> after the number of episodes you choose in a row, Autoskip pauses and asks if you’re still watching. Picking an episode yourself resets the count.</p>
+        <p><strong>Sleep timer:</strong> pause after 15 minutes, 30 minutes or an hour, or at the end of the current episode. Set it from the popup.</p>
+        <p><strong>Weekly recap:</strong> the popup shows the time saved this week, a bar per day, and the shows you watched most. The stats stay in your browser, and <strong>Reset</strong> clears them.</p>
+
+        <h2 id="keys">Keyboard shortcuts</h2>
+        <table>
+          <thead><tr><th>Keys</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><kbd class="kbd">Enter</kbd></td><td>Skip now, while the button is showing</td></tr>
+            <tr><td><kbd class="kbd">Esc</kbd></td><td>Watch this part instead</td></tr>
+            <tr><td><span class="keys"><kbd class="kbd">Alt</kbd><kbd class="kbd">Shift</kbd><kbd class="kbd">S</kbd></span></td><td>Turn auto-skip on or off</td></tr>
+            <tr><td><span class="keys"><kbd class="kbd">Alt</kbd><kbd class="kbd">Shift</kbd><kbd class="kbd">M</kbd></span></td><td>Mark the start, then the end, of a part to skip</td></tr>
+          </tbody>
+        </table>
+        <p>Change the last two at <code>chrome://extensions/shortcuts</code>, or in Firefox at <code>about:addons</code>, then the gear menu and <strong>Manage Extension Shortcuts</strong>.</p>
+
+        <h2 id="faq">Questions</h2>
+        <h3>Does it work in the Crunchyroll app?</h3>
+        <p>No. Phone, TV and console apps can’t run browser extensions. It works on crunchyroll.com in Chrome, Edge and Firefox on a computer.</p>
+        <h3>An episode isn’t being skipped</h3>
+        <p>Some episodes, especially ones that just aired, don’t have skip timestamps yet. Autoskip then reacts to Crunchyroll’s own skip button when it appears. Check the popup on that episode: if it lists no parts, there’s no data for it yet.</p>
+        <h3>Esc also leaves fullscreen</h3>
+        <p>In fullscreen, Chrome uses Esc to exit fullscreen and pages can’t stop that. Click ✕ on the button instead if you want to stay in fullscreen.</p>
+        <h3>Does it collect anything?</h3>
+        <p>No. Settings and stats are stored in your browser, and the only request Autoskip makes is for the episode’s skip timestamps, from Crunchyroll. See the <a href="%BASE%privacy/">privacy policy</a>.</p>
+        <h3>Something’s broken</h3>
+        <p>Crunchyroll sometimes changes its page, which can stop Autoskip from finding the player. <a href="%REPO%/issues/new/choose" rel="noopener">Open an issue</a> with the episode’s link. To include the details, open DevTools on the episode, go to the Console, turn on the Verbose level and filter for <code>CR Autoskip</code>.</p>
+      </article>
+    </div>
+  </main>
+  <!-- partial:footer -->
+  <script type="module" src="/src/pages/common.ts"></script>
+</body>
+</html>

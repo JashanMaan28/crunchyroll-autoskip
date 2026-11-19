@@ -1,0 +1,5 @@
+node_modules/
+dist/
+src/ext/
+public/fonts/
+public/icon.svg

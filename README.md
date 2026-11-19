@@ -9,6 +9,8 @@
 [![Release](https://img.shields.io/github/v/release/JashanMaan28/crunchyroll-autoskip)](https://github.com/JashanMaan28/crunchyroll-autoskip/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+**[Website](https://jashanmaan28.github.io/crunchyroll-autoskip/)** · **[Try it in your browser](https://jashanmaan28.github.io/crunchyroll-autoskip/demo/)** · **[Guide](https://jashanmaan28.github.io/crunchyroll-autoskip/guide/)**
+
 A Chrome, Edge and Firefox extension that adds Netflix-style auto-skip to crunchyroll.com. When an intro, recap, the credits or a preview starts, a **Skip** button appears and fills up over 3 seconds. When it's full, the extension skips. Click the button to skip right away, or press ✕ / Esc to watch that part.
 
 Created in [T3 Code](https://t3.codes).
@@ -73,6 +75,7 @@ extension/
   popup/                 settings popup
 scripts/build.js         Chrome + Firefox packages
 store/                   Chrome Web Store images
+site/                    the website (Vite + React), deployed to GitHub Pages
 test/planner.test.js
 ```
 
@@ -86,6 +89,19 @@ The popup and overlay use the bundled [Figtree](https://github.com/erikdkennedy/
 npm test        # unit tests
 npm run build   # dist/chrome + dist/firefox, each with a zip
 ```
+
+## Website
+
+The site in `site/` is deployed to GitHub Pages by `.github/workflows/pages.yml` on every push to `master` that touches it, the extension, the changelog or the privacy policy. Its demo page runs the extension's own `planner.js`, `defaults.js` and `overlay.js`, copied in at build time, so it always matches the extension.
+
+```
+cd site
+npm install
+npm run dev     # http://localhost:5173/crunchyroll-autoskip/
+npm run build
+```
+
+The hero animation uses the vendored [Stageshow](site/src/kit/README.md) kit (MIT). The show art is original, made for this site.
 
 ## Development
 
