@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Crunchyroll Autoskip",
-  "short_name": "CR Autoskip",
-  "version": "1.1.1",
-  "description": "Netflix-style auto-skip for Crunchyroll: intros, recaps, credits and previews, with a countdown and smart next episode.",
+  "name": "Autoskip for Crunchyroll",
+  "short_name": "Autoskip",
+  "version": "1.1.2",
+  "description": "Unofficial. Skips intros, recaps, credits and previews on Crunchyroll with a 3-second countdown, then plays the next episode.",
   "minimum_chrome_version": "116",
   "permissions": [
     "storage",
@@ -43,7 +43,7 @@
   ],
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "Crunchyroll Autoskip",
+    "default_title": "Autoskip for Crunchyroll",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",

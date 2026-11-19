@@ -72,6 +72,7 @@ extension/
   content/content.js     controller
   popup/                 settings popup
 scripts/build.js         Chrome + Firefox packages
+store/                   Chrome Web Store images
 test/planner.test.js
 ```
 
@@ -95,6 +96,10 @@ Working from a clone: load the `extension/` folder unpacked in Chrome, or run `n
 - Works in the desktop browser only. The Crunchyroll phone, TV and console apps can't run extensions.
 - Some episodes, especially brand-new simulcasts, don't have timestamps yet. In that case the extension can only react to Crunchyroll's own skip button.
 - In fullscreen, `Esc` cancels the skip and also exits fullscreen. Chrome doesn't let pages block that.
+
+## Privacy
+
+No account, no tracking, no ads. Settings and stats stay in your browser, and the only request the extension makes is for the episode's skip timestamps. See [PRIVACY.md](PRIVACY.md).
 
 ## License
 

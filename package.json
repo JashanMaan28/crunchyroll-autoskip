@@ -1,8 +1,8 @@
 {
   "name": "crunchyroll-autoskip",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
-  "description": "Netflix-style auto-skip for Crunchyroll (Chrome, Edge and Firefox extension).",
+  "description": "Unofficial auto-skip for Crunchyroll intros, recaps, credits and previews (Chrome, Edge and Firefox extension).",
   "keywords": [
     "crunchyroll",
     "browser-extension",

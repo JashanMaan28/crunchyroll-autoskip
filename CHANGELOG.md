@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-11-19
+
+### Changed
+
+- The extension is now called "Autoskip for Crunchyroll" everywhere. The
+  browser's extension list used to show "Crunchyroll Autoskip". Its
+  description now says it's unofficial.
+
+### Added
+
+- A [privacy policy](PRIVACY.md).
+- Chrome Web Store images in `store/`.
+
 ## [1.1.1] - 2026-11-15
 
 ### Fixed
@@ -63,7 +76,8 @@ All notable changes to this project are documented here. The format follows
   shortcuts.
 - Settings popup with an episode timeline.
 
-[Unreleased]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/JashanMaan28/crunchyroll-autoskip/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JashanMaan28/crunchyroll-autoskip/releases/tag/v1.0.0

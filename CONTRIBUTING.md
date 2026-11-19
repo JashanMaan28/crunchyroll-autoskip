@@ -50,3 +50,9 @@ bar it picked and every countdown.
 
 The release workflow builds both packages and publishes a GitHub release with
 the zips and the changelog notes.
+
+4. Upload the Chrome zip from the release to the
+   [Chrome Web Store dashboard](https://chrome.google.com/webstore/devconsole)
+   (**Package → Upload new package**) and submit it for review. If the change
+   adds a permission, a host or any new data handling, update
+   [PRIVACY.md](PRIVACY.md) first, and the dashboard's privacy answers to match.
